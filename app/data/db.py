@@ -23,7 +23,7 @@ def init_database() -> None:
         f = Faker("it_IT")
         with Session(engine) as session:
             for i in range(10):
-                user = User(username=f.user_name, name=f.name, email=f.email)
+                user = User(username=f.user_name(), name=f.name(), email=f.email())
                 session.add(user)
                 
                 # TODO: Aggiungere la parte di creazione dell'event ID
@@ -33,10 +33,8 @@ def init_database() -> None:
                 #--------------------------------------
                 #E poi mettere event_id=event...
 
-                registation = Registration(
-                    username=user.username,
-                    event_id=f.random_int(min=0, max=100))
-                session.add(registation)
+                #registation = Registration(username=user.username,                   event_id=f.random_int(min=0, max=100))
+                #session.add(registation)
             session.commit()
 
 def get_session():
