@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Checklist — Event Manager 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f3;
+    --text-primary: #1a1a18;
+    --text-secondary: #6b6b67;
+    --text-tertiary: #a0a09c;
+    --border: rgba(0,0,0,0.12);
+    --green: #1D9E75;
+    --amber: #BA7517;
+    --mono: 'Courier New', monospace;
+    --radius: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg-secondary: #262624;
+      --text-primary: #f0ede8;
+      --text-secondary: #9e9c97;
+      --text-tertiary: #6b6b67;
+      --border: rgba(255,255,255,0.12);
+      --green: #5DCAA5;
+      --amber: #EF9F27;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .title {
+    font-size: 22px;
+    font-weight: 500;
+  }
+
+  .progress-wrap { text-align: right; }
+  .progress-pct { font-size: 24px; font-weight: 500; }
+  .progress-label { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+
+  .progress-track {
+    height: 6px;
+    background: var(--bg-secondary);
+    border-radius: 99px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--green);
+    border-radius: 99px;
+    transition: width 0.3s;
+  }
+
+  .section { margin-bottom: 1.5rem; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  .section-header i { font-size: 16px; color: var(--text-secondary); }
+  .section-header i.optional { color: var(--amber); }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .section-title.optional { color: var(--amber); }
+
+  .row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .row:hover { background: var(--bg-secondary); }
+
+  .row i.check-icon {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-top: 1px;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+
+  .row-label {
+    font-size: 14px;
+    color: var(--text-primary);
+    transition: color 0.2s, text-decoration 0.2s;
+  }
+
+  .row-note {
+    display: block;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-family: var(--mono);
+    margin-top: 2px;
+  }
+
+  .row.done .check-icon { color: var(--green); }
+  .row.done .row-label {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div>
+      <p class="subtitle">Web Programming 2026 — Università di Cagliari</p>
+      <p class="title">Event Manager</p>
+    </div>
+    <div class="progress-wrap">
+      <p class="progress-pct" id="pct">0%</p>
+      <p class="progress-label" id="lbl">0 / 17 completate</p>
+    </div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-bar" id="bar"></div>
+  </div>
+
+  <div id="checklist"></div>
+
+</div>
+<script>
+const sections = [
+  {
+    title: "Setup iniziale", icon: "ti-settings", optional: false,
+    items: [
+      { id:"s1", label:"Clonare il repository", note:"git clone https://github.com/asotgiu/progetto_pw_26.git" },
+      { id:"s2", label:"Creare l'ambiente virtuale (venv o conda)", note:"python -m venv .venv" },
+      { id:"s3", label:"Installare le dipendenze", note:"pip install -r requirements.txt" },
+      { id:"s4", label:"Avviare il server e verificare /docs", note:"fastapi dev → http://127.0.0.1:8000/docs" },
+    ]
+  },
+  {
+    title: "Database e modelli ORM", icon: "ti-database", optional: false,
+    items: [
+      { id:"d1", label:"Implementare il modello User in app/models/user.py", note:"Chiave primaria: username (stringa)" },
+      { id:"d2", label:"Implementare il modello Event in app/models/event.py", note:"Usare datetime per il campo date" },
+      { id:"d3", label:"Importare User ed Event in app/data/db.py", note:"Affinché SQLModel.metadata.create_all() crei le tabelle" },
+    ]
+  },
+  {
+    title: "API obbligatorie — /events", icon: "ti-calendar", optional: false,
+    items: [
+      { id:"e1", label:"GET /events — lista tutti gli eventi", note:"" },
+      { id:"e2", label:"POST /events — crea un nuovo evento", note:"" },
+      { id:"e3", label:"GET /events/{id} — restituisce un evento (404 se assente)", note:"" },
+      { id:"e4", label:"PUT /events/{id} — aggiorna un evento", note:"" },
+      { id:"e5", label:"POST /events/{id}/register — registra un utente all'evento", note:"Crea l'utente automaticamente se non esiste" },
+    ]
+  },
+  {
+    title: "API obbligatorie — /users", icon: "ti-users", optional: false,
+    items: [
+      { id:"u1", label:"GET /users — lista tutti gli utenti", note:"" },
+      { id:"u2", label:"POST /users — crea un nuovo utente (4xx se username duplicato)", note:"" },
+      { id:"u3", label:"GET /users/{username} — restituisce un utente (404 se assente)", note:"" },
+      { id:"u4", label:"GET /registrations — lista tutte le registrazioni", note:"" },
+    ]
+  },
+  {
+    title: "Consegna", icon: "ti-send", optional: false,
+    items: [
+      { id:"c1", label:"Superare la pipeline CI/CD", note:"Obbligatorio prima della consegna" },
+      { id:"c2", label:"Preparare la presentazione (pptx o pdf)", note:"Tutti i membri devono presentare qualcosa" },
+      { id:"c3", label:"Inviare mail a maura.pintor@unica.it", note:"Link repo + nomi/matricole + presentazione" },
+    ]
+  },
+  {
+    title: "API opzionali (+punti)", icon: "ti-star", optional: true,
+    items: [
+      { id:"o1", label:"DELETE /events — elimina tutti gli eventi", note:"" },
+      { id:"o2", label:"DELETE /events/{id} — elimina evento + registrazioni (cascade)", note:"" },
+      { id:"o3", label:"DELETE /users — elimina tutti gli utenti", note:"" },
+      { id:"o4", label:"DELETE /users/{username} — elimina utente + registrazioni (cascade)", note:"" },
+      { id:"o5", label:"DELETE /registrations?username=&event_id= — elimina registrazione singola", note:"" },
+    ]
+  }
+];
+
+const TOTAL = sections.reduce((a, s) => a + s.items.length, 0);
+const state = JSON.parse(localStorage.getItem('pw26-checklist') || '{}');
+
+function save() { localStorage.setItem('pw26-checklist', JSON.stringify(state)); }
+
+function updateProgress() {
+  const done = Object.values(state).filter(Boolean).length;
+  const pct = Math.round(done / TOTAL * 100);
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('lbl').textContent = done + ' / ' + TOTAL + ' completate';
+  document.getElementById('bar').style.width = pct + '%';
+}
+
+function toggle(id) {
+  state[id] = !state[id];
+  save();
+  const row = document.getElementById('row-' + id);
+  const icon = document.getElementById('icon-' + id);
+  if (state[id]) {
+    row.classList.add('done');
+    icon.className = 'ti ti-circle-check check-icon';
+  } else {
+    row.classList.remove('done');
+    icon.className = 'ti ti-circle check-icon';
+  }
+  updateProgress();
+}
+
+const container = document.getElementById('checklist');
+
+sections.forEach(sec => {
+  const wrap = document.createElement('div');
+  wrap.className = 'section';
+
+  const hdr = document.createElement('div');
+  hdr.className = 'section-header';
+  hdr.innerHTML = `<i class="ti ${sec.icon}${sec.optional ? ' optional' : ''}" aria-hidden="true"></i><span class="section-title${sec.optional ? ' optional' : ''}">${sec.title}</span>`;
+  wrap.appendChild(hdr);
+
+  sec.items.forEach(item => {
+    const isDone = !!state[item.id];
+    const row = document.createElement('div');
+    row.className = 'row' + (isDone ? ' done' : '');
+    row.id = 'row-' + item.id;
+    row.setAttribute('role', 'checkbox');
+    row.setAttribute('aria-checked', isDone ? 'true' : 'false');
+    row.setAttribute('tabindex', '0');
+    row.onclick = () => toggle(item.id);
+    row.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(item.id); } };
+
+    const noteHtml = item.note ? `<span class="row-note">${item.note}</span>` : '';
+    row.innerHTML = `
+      <i id="icon-${item.id}" class="ti ${isDone ? 'ti-circle-check' : 'ti-circle'} check-icon" aria-hidden="true"></i>
+      <div><span class="row-label">${item.label}</span>${noteHtml}</div>
+    `;
+    wrap.appendChild(row);
+  });
+
+  container.appendChild(wrap);
+});
+
+updateProgress();
+</script>
+</body>
+</html>
