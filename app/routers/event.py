@@ -49,9 +49,13 @@ def update_event(id: int, event_update: Event, session: SessionDep):
 
     evento_db = session.get(Event, id)  #cerco se levento esiste
 
+
+
     if not evento_db:
         raise HTTPException(status_code=404, detail="Evento non trovato")
 
+    if isinstance(event_update.date, str):
+        event_update.date = datetime.fromisoformat(event_update.date)
 
 
     update_data = event_update.model_dump(exclude_unset=True)  # se esiste aggiorniamo i suoi dati con quelli nuovi
