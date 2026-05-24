@@ -23,20 +23,26 @@ def init_database() -> None:
         f = Faker("it_IT")
         with Session(engine) as session:
             for i in range(10):
-                user = User(username=f.user_name, name=f.name, email=f.email)
+                user = User(username=f.user_name(), name=f.name(), email=f.email())
                 session.add(user)
                 
                 # TODO: Aggiungere la parte di creazione dell'event ID
-                #--------------------------------------------------------
-
-
-                #--------------------------------------
-                #E poi mettere event_id=event...
+                evento = Event(
+                    title=f.sentence(nb_words=3),  # Titolo di 3 parole
+                    description=f.sentence(),  # Una frase casuale
+                    date=f.date_time_this_year(),  # Una data casuale di quest'anno
+                    location=f.city()  # Una città casuale
+                )
+                session.add(evento)
+                session.commit()
+                session.refresh(evento)
 
                 registation = Registration(
                     username=user.username,
-                    event_id=f.random_int(min=0, max=100))
+                    event_id=evento.id
+                )
                 session.add(registation)
+
             session.commit()
 
 def get_session():
