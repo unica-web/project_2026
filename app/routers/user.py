@@ -3,7 +3,7 @@ from app.models.userDB import User
 #verificare from app.models.registration import Registration
 from app.data.db import SessionDep
 from typing import Annotated
-from sqlmodel import select
+from sqlmodel import select, delete
 
 user_router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -45,8 +45,35 @@ def new_user(
     
     if userExist:
         raise HTTPException(status_code=409, detail="L'Username esiste già non trovato")
+        #TODO: Controllare meglio l'errore come viene mostrato, possibile fix?
     else:
         newUser = User.model_validate(user)
         session.add(newUser)
         session.commit()
         return "Utente aggiunto con successo"
+    
+@user_router.delete("/")
+def delete_users(
+    session: SessionDep
+):
+    session.exec(delete(User))
+    session.commit()
+    return "Tutti gli utenti sono stati eliminati"
+
+@user_router.delete("/{username}")
+def delete_user(
+    session: SessionDep,
+    username: Annotated[str, Path(description="Username dell'utente")]
+):
+    user=session.get(User, username)
+
+    if not user:
+        raise HTTPException(status_code=404, detail="Utente non trovato")
+    
+
+    session.delete(user)
+    session.commit()
+
+    #TODO: Aggiungere parte di rimozione delle Registrazioni
+    return "Utente rimosso"
+    
