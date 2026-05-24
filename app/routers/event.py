@@ -2,23 +2,25 @@ from fastapi import APIRouter, HTTPException, status
 from app.models.eventDB import Event
 from app.models.userDB import User
 from app.models.registration import Registration
-from app.data.db import SessionDep  # Importiamo la stessa scorciatoia di Simone
+from app.data.db import SessionDep
 from sqlmodel import select
-
-
+from datetime import datetime
 
 event_router = APIRouter(prefix="/events", tags=["Events"])
 
 
-@event_router.get("/")
+@event_router.get("")
 def get_all_events(session: SessionDep) -> list[Event]:
     eventi = session.exec(select(Event)).all()  #Serve per eseguiire la domanda
     return eventi
 
 
 # 3. API: Crea un nuovo evento (POST /events)
-@event_router.post("/", response_model=Event, status_code=status.HTTP_201_CREATED)
+@event_router.post("", response_model=Event, status_code=status.HTTP_201_CREATED)
 def create_event(event: Event, session: SessionDep):
+
+    if isinstance(event.date, str):
+        event.date = datetime.fromisoformat(event.date)  #data stringa diventa data vera
 
 
     session.add(event)   # Aggiungo l'evento ricevuto dal frontend al database
@@ -120,7 +122,7 @@ def delete_single_event(id: int, session: SessionDep):
     return {"message": "Evento e registrazioni associate eliminati con successo"}
 
 
-@event_router.delete("/", status_code=status.HTTP_200_OK)
+@event_router.delete("", status_code=status.HTTP_200_OK)
 def delete_all_events(session: SessionDep):
     """
     Elimina letteralmente tutti gli eventi presenti nel database.

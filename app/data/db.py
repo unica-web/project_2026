@@ -37,11 +37,11 @@ def init_database() -> None:
                 session.commit()
                 session.refresh(evento)
 
-                registation = Registration(
+                registration = Registration(
                     username=user.username,
                     event_id=evento.id
                 )
-                session.add(registation)
+                session.add(registration)
 
             session.commit()
 
