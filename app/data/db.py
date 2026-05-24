@@ -27,7 +27,15 @@ def init_database() -> None:
                 session.add(user)
                 
                 # TODO: Aggiungere la parte di creazione dell'event ID
-                #--------------------------------------------------------
+                evento = Event(
+                    title=f.sentence(nb_words=3),  # Titolo di 3 parole
+                    description=f.sentence(),  # Una frase casuale
+                    date=f.date_time_this_year(),  # Una data casuale di quest'anno
+                    location=f.city()  # Una città casuale
+                )
+                session.add(evento)
+                session.commit()
+                session.refresh(evento)
 
 
                 #--------------------------------------
