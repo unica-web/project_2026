@@ -20,8 +20,12 @@ def init_database() -> None:
     ds_exists = os.path.isfile(sqlite_file_name)
     SQLModel.metadata.create_all(engine)
     if not ds_exists:
-        f = Faker("it_IT")
+        f = Faker("it_IT")        
         with Session(engine) as session:
+            
+            utenti=[]
+            eventi=[]
+
             for i in range(10):
                 user = User(username=f.user_name(), name=f.name(), email=f.email())
                 session.add(user)
@@ -35,14 +39,22 @@ def init_database() -> None:
                 )
                 session.add(evento)
                 session.commit()
+
+                session.refresh(user)
                 session.refresh(evento)
+                eventi.append(evento)
+                utenti.append(user)
+            import random
 
-
-                #--------------------------------------
-                #E poi mettere event_id=event...
-
-                #registation = Registration(username=user.username,                   event_id=f.random_int(min=0, max=100))
-                #session.add(registation)
+            for user in utenti:
+                eventi_scelti= random.sample(eventi, k=random.randint(1,3))
+                for evento in eventi_scelti:
+                    registrazione= Registration(
+                        username=user.username,
+                        event_id=evento.id
+                    )
+                    session.add(registrazione)
+            
             session.commit()
 
 def get_session():

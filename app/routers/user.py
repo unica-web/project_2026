@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Path, HTTPException, Query
 from app.models.userDB import User
-#verificare from app.models.registration import Registration
+from app.models.registration import Registration
 from app.data.db import SessionDep
 from typing import Annotated
 from sqlmodel import select, delete
@@ -70,10 +70,13 @@ def delete_user(
     if not user:
         raise HTTPException(status_code=404, detail="Utente non trovato")
     
+    registrazioni = session.exec(select(Registration).where(Registration.username==username)).all()
+
+    for i in registrazioni:
+        session.delete(i)
 
     session.delete(user)
     session.commit()
 
-    #TODO: Aggiungere parte di rimozione delle Registrazioni
     return "Utente rimosso"
     
