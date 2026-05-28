@@ -18,7 +18,7 @@ from app.routers import event
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from app.data.db import init_database
-
+from app.routers import user #api davide 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,7 +36,7 @@ app.mount(
 )
 app.include_router(frontend.router)
 app.include_router(event.router)
-
+app.include_router(user.router) #api davide 
 
 if __name__ == "__main__":
     import uvicorn
