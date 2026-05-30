@@ -19,6 +19,7 @@ from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from app.data.db import init_database
 from app.routers import registrations    # API di mattia2
+from app.routers import users
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -37,7 +38,7 @@ app.mount(
 app.include_router(frontend.router)
 app.include_router(events.router)
 app.include_router(registrations.router)     # API di mattia2
-
+app.include_router(users.router)
 
 if __name__ == "__main__":
     import uvicorn
