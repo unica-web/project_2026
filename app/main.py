@@ -14,11 +14,11 @@ if Path(__file__).parent == Path(os.getcwd()):
 
 from fastapi import FastAPI
 from app.routers import frontend
-from app.routers import event
+from app.routers import events
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from app.data.db import init_database
-
+from app.routers import registrations    # API di mattia2
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,7 +35,8 @@ app.mount(
     name="static"
 )
 app.include_router(frontend.router)
-app.include_router(event.router)
+app.include_router(events.router)
+app.include_router(registrations.router)     # API di mattia2
 
 
 if __name__ == "__main__":
