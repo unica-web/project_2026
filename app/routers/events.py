@@ -64,7 +64,11 @@ def update_event(
     return "Event successfully updated"
 
 @router.post("/{id}/register", status_code=status.HTTP_201_CREATED)
-def register_user_to_event(id: int, user: User, session: SessionDep) -> Registration:
+def register_user_to_event(
+    id: Annotated[int, Path(description="The ID of the event")],
+    user: UserCreate,
+    session: SessionDep
+) -> Registration:
     """Registra un utente a un evento."""
     event = session.get(Event, id)
 
@@ -77,9 +81,10 @@ def register_user_to_event(id: int, user: User, session: SessionDep) -> Registra
     existing_user = session.get(User, user.username)
 
     if existing_user is None:
-        session.add(user)
+        db_user = User.model_validate(user)
+        session.add(db_user)
         session.commit()
-        session.refresh(user)
+        session.refresh(db_user)
 
     existing_registration = session.get(Registration, (user.username, id))
 

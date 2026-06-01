@@ -1,16 +1,16 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
 
 from app.data.db import SessionDep
-from app.models.user import User
+from app.models.user import User, UserCreate, UserPublic
 from app.models.registration import Registration
 
 
-router = APIRouter(tags=["users"])
+router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/users")
-def get_users(session: SessionDep):
+@router.get("")
+def get_users(session: SessionDep) -> list[UserPublic]:
     """
     Restituisce la lista di tutti gli utenti presenti nel database.
     """
@@ -18,8 +18,8 @@ def get_users(session: SessionDep):
     return users
 
 
-@router.post("/users", status_code=201)
-def create_user(user: User, session: SessionDep):
+@router.post("", status_code=status.HTTP_201_CREATED)
+def create_user(user: UserCreate, session: SessionDep) -> UserPublic:
     """
     Crea un nuovo utente se lo username non esiste già.
     """
@@ -27,19 +27,21 @@ def create_user(user: User, session: SessionDep):
 
     if existing_user is not None:
         raise HTTPException(
-            status_code=409,
+            status_code=status.HTTP_409_CONFLICT,
             detail="Username già esistente"
         )
 
-    session.add(user)
+    db_user = User.model_validate(user)
+
+    session.add(db_user)
     session.commit()
-    session.refresh(user)
+    session.refresh(db_user)
 
-    return user
+    return db_user
 
 
-@router.get("/users/{username}")
-def get_user(username: str, session: SessionDep):
+@router.get("/{username}")
+def get_user(username: str, session: SessionDep) -> UserPublic:
     """
     Restituisce un utente tramite username.
     """
@@ -47,14 +49,14 @@ def get_user(username: str, session: SessionDep):
 
     if user is None:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Utente non trovato"
         )
 
     return user
 
 
-@router.delete("/users")
+@router.delete("")
 def delete_users(session: SessionDep):
     """
     Elimina tutti gli utenti e tutte le registrazioni associate.
@@ -74,7 +76,7 @@ def delete_users(session: SessionDep):
     return {"message": "Tutti gli utenti sono stati eliminati"}
 
 
-@router.delete("/users/{username}")
+@router.delete("/{username}")
 def delete_user(username: str, session: SessionDep):
     """
     Elimina un utente tramite username e tutte le sue registrazioni associate.
@@ -83,7 +85,7 @@ def delete_user(username: str, session: SessionDep):
 
     if user is None:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Utente non trovato"
         )
 
