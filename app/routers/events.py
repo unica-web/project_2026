@@ -5,7 +5,7 @@ from sqlmodel import select
 
 from app.data.db import SessionDep
 from app.models.event import Event, EventCreate, EventPublic
-from app.models.user import User
+from app.models.user import User, UserCreate, UserPublic
 from app.models.registration import Registration
 
 
