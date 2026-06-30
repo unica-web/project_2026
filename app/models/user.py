@@ -1,5 +1,5 @@
-from pydantic import ConfigDict
 from sqlmodel import SQLModel, Field #impostare modello database
+from pydantic import ConfigDict
 
 # 1. Modello usato per validare i dati in INGRESSO (Request Body)
 class CreateUser(SQLModel):
