@@ -14,10 +14,12 @@ if Path(__file__).parent == Path(os.getcwd()):
 
 from fastapi import FastAPI
 from app.routers import frontend
+from app.routers import events
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from app.data.db import init_database
-
+from app.routers import registrations    
+from app.routers import users
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -34,7 +36,9 @@ app.mount(
     name="static"
 )
 app.include_router(frontend.router)
-
+app.include_router(events.router)
+app.include_router(registrations.router)     
+app.include_router(users.router)
 
 if __name__ == "__main__":
     import uvicorn
