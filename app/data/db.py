@@ -5,7 +5,9 @@ import os
 from faker import Faker
 from app.config import config
 # TODO: remember to import all the DB models here
-from app.models.registration import Registration  # NOQA
+from app.models.event import Event
+from app.models.user import User
+from app.models.registration import Registration
 
 
 sqlite_file_name = config.root_dir / "data/database.db"
