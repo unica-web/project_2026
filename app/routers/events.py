@@ -43,25 +43,25 @@ def get_event(id: int, session: Session = Depends(get_session)):
 @router.post("/{id}/register", status_code=status.HTTP_200_OK)
 def register_to_event(id: int, user_data: CreateUser, session: Session = Depends(get_session)):
     """registrazione utente ad un evento con l'id indicato. se l'utente non esiste si procede alla creazione"""
-    # 1. Verifica che l'evento esista
+    #Verifica che l'evento esista
     event = session.get(Event, id)
     if not event:
         raise HTTPException(status_code=404, detail="Event not found")
 
-    # 2. Verifica se l'utente esiste già, altrimenti lo prepara per la creazione
+    #Verifica se l'utente esiste già, altrimenti lo prepara per la creazione
     user = session.get(User, user_data.username)
     if not user:
         user = User(username=user_data.username, name=user_data.name, email=user_data.email)
         session.add(user)
 
-    # 3. VERIFICA E CREA LA REGISTRAZIONE (Questo è il pezzo che ti mancava!)
+    #Verifica e crea la registrazione
     registration = session.get(Registration, (user_data.username, id))
     if not registration:
         # Crea il collegamento tra username e l'id dell'evento
         new_registration = Registration(username=user_data.username, event_id=id)
         session.add(new_registration)
 
-    # 4. Salva l'utente E la registrazione nel database in un colpo solo
+    #Salva l'utente E la registrazione nel database in un colpo solo
     session.commit()
 
     return {"message":"User successfully registered to the event"}
@@ -81,8 +81,6 @@ def update_event(id: int, event_update: CreateEvent, session: Session = Depends(
         db_event.date = datetime.fromisoformat(event_update.date)
     else:
         db_event.date = event_update.date
-
-    # db_event = Event.model_validate(event_update)
 
     db_event.description = event_update.description
     db_event.location = event_update.location
@@ -106,7 +104,6 @@ def delete_all_event(session: Session = Depends(get_session)):
         session.commit()
 
     return {"message":"Events deleted successfully"}  # per messaggi, status_code 200_ok
-
 
 @router.delete("/{id}", status_code=status.HTTP_200_OK)
 def delete_event(id: int, session: Session = Depends(get_session)):
